@@ -1,30 +1,31 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: TEMPLATE (uninitialized) → 1.0.0
-Bump rationale: First ratification — populating placeholders with concrete principles.
-   MINOR-equivalent (initial baseline), expressed as 1.0.0 by convention.
+Version change: 1.0.0 → 1.1.0
+Bump rationale: MINOR — três novos princípios adicionados (Code Quality,
+   Testing Standards, UX Consistency). Nenhuma redefinição ou remoção dos
+   princípios P-I a P-V existentes. "Performance Requirements" do pedido do
+   usuário já está coberto por P-II Performance Is Product (mantido como está);
+   o Constitution Check do plan-template referencia P-II para essa dimensão.
 
-Modified principles (vs. template placeholders):
-   [PRINCIPLE_1] → I. Frictionless by Default (NON-NEGOTIABLE)
-   [PRINCIPLE_2] → II. Performance Is Product
-   [PRINCIPLE_3] → III. Discovery-Driven Experience
-   [PRINCIPLE_4] → IV. Build → Measure → Learn
-   [PRINCIPLE_5] → V. Automated Delivery & Marketplace Trust
+Modified principles: none (P-I a P-V inalterados).
 
-Added sections:
-   - Product & Platform Standards (replaces [SECTION_2])
-   - Development Workflow & Quality Gates (replaces [SECTION_3])
-   - Governance (filled)
+Added principles:
+   VI. Code Quality Discipline
+   VII. Testing Standards
+   VIII. UX Consistency
 
-Removed sections: none (only placeholder replacement).
+Added sections: none (novos princípios entram em Core Principles).
+
+Removed sections: none.
 
 Templates requiring updates:
-   ✅ .specify/templates/plan-template.md — Constitution Check rewritten to gate on the 5 principles
-   ✅ .specify/templates/spec-template.md — Already enforces measurable Success Criteria (aligns with P-IV); no edit
-   ✅ .specify/templates/tasks-template.md — Task structure already supports performance/automation tasks; no edit
-   ✅ CLAUDE.md — Existing product doctrine aligned with these principles; no edit
-   ✅ .specify/templates/checklist-template.md — Generic checklist; no edit needed
+   ✅ .specify/memory/constitution.md — versão, princípios novos, Workflow gate ampliado
+   ✅ .specify/templates/plan-template.md — Constitution Check estendido com gates P-VI, P-VII, P-VIII
+   ✅ .specify/templates/tasks-template.md — regra "Tests OPTIONAL" qualificada com exceção do caminho-do-dinheiro (P-VII)
+   ✅ .specify/templates/spec-template.md — Success Criteria já cobre P-IV; sem mudança
+   ✅ .specify/templates/checklist-template.md — genérico; sem mudança
+   ✅ CLAUDE.md — alinhado; sem mudança
 
 Follow-up TODOs: none.
 -->
@@ -139,6 +140,93 @@ Regras invioláveis:
 recompra. Ambos sustentam a recompra D30, que é o principal indicador de
 hábito do produto.
 
+### VI. Code Quality Discipline
+
+Código durável (produção, caminho crítico) MUST seguir padrões mínimos de
+legibilidade, testabilidade e manutenibilidade. Código experimental (POC,
+spike) é dispensado dessas regras, desde que tenha data-limite explícita de
+promoção ou remoção registrada.
+
+Regras invioláveis para código durável:
+- Toda PR em branch durável (`main` / release) MUST passar por revisão humana
+  de pelo menos um par antes do merge. Self-merge em `main` é PROIBIDO.
+- Linters e type-checkers (quando aplicáveis ao stack escolhido) MUST rodar
+  em CI; regras configuradas como erro bloqueiam o merge.
+- Funções, módulos e componentes MUST ter responsabilidade única descritível
+  em uma frase. Se descrição honesta exige "e" repetido, refatore antes do
+  merge.
+- Dependências externas MUST ser justificadas (necessidade, licença, peso de
+  bundle, manutenção ativa). Pacotes abandonados ou redundantes são vetados.
+- Débito técnico identificado MUST ser registrado como issue rastreável.
+  "Resolver depois" sem ticket equivale a não resolver.
+- Comentários explicam POR QUE (regra de negócio, invariante, workaround).
+  O QUE é trabalho de nomenclatura. Docstrings prolixas são ruído.
+
+**Rationale**: P-IV exige iteração rápida; iteração sobre código ilegível
+acumula custo exponencial. A linha entre "ágil" e "negligente" é manter
+qualidade no que dura, sem onerar o que é descartável.
+
+### VII. Testing Standards
+
+Testes existem para proteger comportamento de negócio, não para perseguir
+cobertura. O caminho do dinheiro (checkout → confirmação Pix → entrega
+digital) é o único caminho com testes NÃO-NEGOCIÁVEIS.
+
+Regras invioláveis:
+- Caminho do dinheiro MUST ter testes automatizados em pelo menos dois
+  níveis: unit (regras puras, cálculo, validação) e integração ou e2e
+  (gateway Pix, webhook de confirmação, pipeline de entrega). Sem esses,
+  o PR é bloqueado.
+- Anti-fraude e regras de moderação automatizada MUST ter testes que
+  cubram cenários positivos E negativos conhecidos.
+- Invariantes de dados (idempotência de webhook, unicidade de token de
+  entrega, total do pedido) MUST ter testes dedicados.
+- Cálculo monetário MUST ser desenvolvido em TDD: teste antes da
+  implementação, sem exceção.
+- Para o restante do código, testes são RECOMENDADOS quando reduzem custo
+  de regressão; OPCIONAIS para experimentos com kill date registrado.
+- Testes flaky são bugs de prioridade alta — não tolerados em `main`.
+  Quarentena sem ticket de correção em até 1 sprint = teste removido.
+- Cobertura como número absoluto NÃO é meta; ausência de teste em caminho
+  do dinheiro É bloqueio de review.
+
+**Rationale**: Cobertura indiscriminada desacelera a iteração (P-IV) sem
+proteger o que importa. Foco no caminho do dinheiro maximiza ROI de teste:
+um bug nesse caminho destrói confiança (P-V) e GMV simultaneamente.
+
+### VIII. UX Consistency
+
+A experiência de compra impulsiva depende de previsibilidade visual e
+narrativa: o usuário reconhece o Bugou pela cara, pelo tom e pelo ritmo,
+não pela tela específica. Inconsistência fragmenta marca e introduz
+fricção cognitiva — violação direta de P-I.
+
+Regras invioláveis:
+- Sistema de design (tokens de cor, tipografia, espaçamento, motion,
+  componentes-base) é fonte única da verdade para qualquer superfície
+  visível ao usuário. Implementações ad-hoc fora do sistema MUST ser
+  promovidas a componente do sistema antes do merge, ou revertidas.
+- Tom de copy segue o tom Bugou (irreverente, coloquial, urgente,
+  oportunístico — referência em `CLAUDE.md`). Microcopy de erro, empty
+  state e confirmação são superfícies de marca; strings utilitárias em
+  inglês ou corporateês são PROIBIDAS no caminho do usuário.
+- Toda nova tela MUST especificar estados de loading, vazio, erro e
+  sucesso. "Spinner sem contexto" e "erro genérico sem ação" são bugs
+  de UX, não detalhes.
+- Acessibilidade baseline: contraste WCAG AA, alvos de toque ≥ 44px,
+  navegação por teclado em desktop, labels para leitor de tela em
+  caminho do dinheiro. Não é opcional.
+- Padrões de motion (entrada, saída, transição) MUST ser consistentes
+  entre telas. Animações destoantes quebram a percepção de "produto
+  vivo" e introduzem pause cognitivo.
+- Divergências intencionais do sistema (ex.: surface experimental para
+  TikTok com motion próprio) MUST ser marcadas como temporárias com
+  caminho de convergência registrado.
+
+**Rationale**: Bugou é descoberta impulsiva — o usuário troca de produto
+a cada poucos segundos. Consistência libera atenção para o que importa:
+a oferta. Variação introduz pause; pause mata impulso (P-I).
+
 ## Product & Platform Standards
 
 Padrões inegociáveis derivados dos princípios acima:
@@ -168,12 +256,15 @@ Como a constituição é aplicada no fluxo de trabalho:
   mensuráveis e Assumptions explícitas. Specs que falham essas exigências
   MUST passar por `/speckit-clarify` antes do plano.
 - **Plan Gate (Constitution Check)**: `/speckit-plan` MUST avaliar a feature
-  contra cada um dos 5 princípios e registrar violações justificadas na seção
+  contra cada um dos 8 princípios e registrar violações justificadas na seção
   "Complexity Tracking". Violações de P-I (Frictionless) e P-II (Performance)
   exigem aprovação explícita de produto, não apenas justificativa técnica.
+  Violações de P-VII (Testing Standards) no caminho do dinheiro são
+  bloqueadoras — sem aprovação possível.
 - **Tasks Gate**: `/speckit-tasks` MUST incluir, quando aplicável, tarefas
-  explícitas de instrumentação (telemetria, dashboards) e de orçamento de
-  performance — não como polish, mas como parte da story que as exige.
+  explícitas de instrumentação (telemetria, dashboards), de orçamento de
+  performance (P-II) e de testes do caminho do dinheiro (P-VII) — não como
+  polish, mas como parte da story que as exige.
 - **Pre-Merge Quality**: Toda mudança em caminho crítico (feed, detalhe,
   checkout, delivery) MUST declarar impacto esperado em latência e em ao
   menos uma métrica norteadora. Mudanças sem instrumentação correspondente
@@ -214,4 +305,4 @@ o princípio prevalece.
   divergência entre `CLAUDE.md` e esta constituição MUST ser resolvida a
   favor da constituição, com `CLAUDE.md` atualizado em seguida.
 
-**Version**: 1.0.0 | **Ratified**: 2026-05-28 | **Last Amended**: 2026-05-28
+**Version**: 1.1.0 | **Ratified**: 2026-05-28 | **Last Amended**: 2026-05-28

@@ -61,6 +61,19 @@ registradas em "Complexity Tracking" abaixo.
   pagamento ou entrega, a entrega digital permanece 100% automatizada e as
   salvaguardas (anti-fraude, moderação, DMCA, refund self-service) seguem aplicáveis?
   [PASS/VIOLATION + N/A + nota]
+- **P-VI — Code Quality Discipline**: Se a feature introduz código durável (não
+  experimento com kill date), há revisão por par prevista, lint/type-check em CI,
+  responsabilidade única por módulo e nenhuma dependência abandonada introduzida?
+  [PASS/VIOLATION + N/A + nota]
+- **P-VII — Testing Standards**: Se a feature toca caminho do dinheiro (checkout,
+  Pix, entrega digital), anti-fraude/moderação ou invariantes de dados, os testes
+  obrigatórios (unit + integração/e2e; TDD para cálculo monetário) estão previstos
+  em Tasks? Violação aqui é BLOQUEADORA, não justificável. [PASS/VIOLATION + N/A + nota]
+- **P-VIII — UX Consistency**: Se a feature renderiza qualquer superfície visível
+  ao usuário, ela usa o sistema de design existente (ou promove novo componente a
+  ele antes do merge), especifica estados loading/vazio/erro/sucesso, segue tom
+  Bugou e respeita acessibilidade baseline (WCAG AA, alvos ≥ 44px, leitor de tela
+  no caminho do dinheiro)? [PASS/VIOLATION + N/A + nota]
 
 ## Project Structure
 
